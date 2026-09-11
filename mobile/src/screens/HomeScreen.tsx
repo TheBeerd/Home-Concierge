@@ -6,8 +6,9 @@ import { RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, View } from
 import { api } from '../api';
 import { Button } from '../components/Button';
 import { StatusRow } from '../components/StatusRow';
+import { openRequest } from '../navigation/requestRouting';
 import { colors, fonts } from '../theme/tokens';
-import type { DashboardData, RequestStatus } from '../types/domain';
+import type { DashboardData } from '../types/domain';
 import type { RootStackParamList, TabParamList } from '../navigation/types';
 
 type Props = CompositeScreenProps<
@@ -34,15 +35,6 @@ export function HomeScreen({ navigation }: Props) {
     setRefreshing(false);
   }, [load]);
 
-  const openRequest = (requestId: string, status: RequestStatus) => {
-    if (status === 'memo_ready') {
-      navigation.navigate('DecisionMemo', { requestId });
-    } else {
-      // Booked/awaiting-confirmation requests route to their job.
-      navigation.navigate('JobStatus', { jobId: 'job_coolway_ac' });
-    }
-  };
-
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView
@@ -67,7 +59,7 @@ export function HomeScreen({ navigation }: Props) {
             key={request.id}
             title={request.title}
             meta={request.statusMeta}
-            onPress={() => openRequest(request.id, request.status)}
+            onPress={() => openRequest(navigation, request)}
           />
         ))}
       </ScrollView>

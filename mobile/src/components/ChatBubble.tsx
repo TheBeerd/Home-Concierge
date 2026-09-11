@@ -1,18 +1,19 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme/tokens';
-import type { IntakeSender } from '../types/domain';
 
 interface ChatBubbleProps {
-  sender: IntakeSender;
+  /** Right-aligned, dark bubble for "this side of the conversation"
+   * (the homeowner in both the AI intake and a contractor thread). */
+  align: 'left' | 'right';
   text: string;
 }
 
-export function ChatBubble({ sender, text }: ChatBubbleProps) {
-  const isUser = sender === 'user';
+export function ChatBubble({ align, text }: ChatBubbleProps) {
+  const isRight = align === 'right';
   return (
-    <View style={[styles.bubble, isUser ? styles.user : styles.ai]}>
-      <Text style={[styles.text, isUser && styles.userText]}>{text}</Text>
+    <View style={[styles.bubble, isRight ? styles.right : styles.left]}>
+      <Text style={[styles.text, isRight && styles.rightText]}>{text}</Text>
     </View>
   );
 }
@@ -25,14 +26,14 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginBottom: 10,
   },
-  ai: {
+  left: {
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.line,
     borderBottomLeftRadius: 4,
     alignSelf: 'flex-start',
   },
-  user: {
+  right: {
     backgroundColor: colors.ink,
     alignSelf: 'flex-end',
     borderBottomRightRadius: 4,
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     color: colors.ink,
   },
-  userText: {
+  rightText: {
     color: colors.white,
   },
 });

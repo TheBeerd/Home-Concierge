@@ -1,17 +1,26 @@
 import type {
+  AccountProfile,
   CompletionConfirmationInput,
   DashboardData,
   DecisionMemo,
   IntakeMessage,
   IntakeSession,
   JobStatus,
+  MessageThread,
+  MessageThreadDetail,
+  ServiceRequestSummary,
+  ThreadMessage,
 } from '../types/domain';
 import {
   MOCK_JOB_ID,
   MOCK_REQUEST_ID,
+  accountProfile,
+  allRequests,
   dashboardData,
   decisionMemo,
-  jobStatus,
+  jobStatusByJobId,
+  messageThreads,
+  messagesByThreadId,
 } from '../data/mockData';
 import type { HomeConciergeApi } from './client';
 
@@ -62,10 +71,23 @@ function scriptedNextMessage(userReplyCount: number): IntakeMessage {
 
 const sessions = new Map<string, { session: IntakeSession; userReplyCount: number }>();
 
+// Deep-ish copies so repeated reads/writes in a session don't mutate the
+// shared seed data in mockData.ts.
+const requestStore: ServiceRequestSummary[] = allRequests.map((request) => ({ ...request }));
+const jobStore = new Map<string, JobStatus>(
+  Object.entries(jobStatusByJobId).map(([id, job]) => [id, { ...job, timeline: job.timeline.map((e) => ({ ...e })) }]),
+);
+const threadMessageStore = new Map<string, ThreadMessage[]>(
+  Object.entries(messagesByThreadId).map(([id, msgs]) => [id, msgs.map((m) => ({ ...m }))]),
+);
+
 export class MockHomeConciergeApi implements HomeConciergeApi {
   async getDashboard(): Promise<DashboardData> {
     await delay(250);
-    return dashboardData;
+    return {
+      ...dashboardData,
+      activeRequests: requestStore.filter((r) => r.status !== 'completed'),
+    };
   }
 
   async startIntakeSession(): Promise<IntakeSession> {
@@ -130,15 +152,16 @@ export class MockHomeConciergeApi implements HomeConciergeApi {
 
   async acceptBid(_requestId: string, _bidId: string): Promise<JobStatus> {
     await delay(400);
-    return jobStatus;
+    const job = jobStore.get(MOCK_JOB_ID);
+    if (!job) throw new Error(`No seeded job for accepted bid`);
+    return job;
   }
 
   async getJobStatus(jobId: string): Promise<JobStatus> {
     await delay(300);
-    if (jobId !== MOCK_JOB_ID) {
-      throw new Error(`No job status for job ${jobId}`);
-    }
-    return jobStatus;
+    const job = jobStore.get(jobId);
+    if (!job) throw new Error(`No job status for job ${jobId}`);
+    return job;
   }
 
   async confirmJobCompletion(
@@ -146,18 +169,79 @@ export class MockHomeConciergeApi implements HomeConciergeApi {
     confirmation: CompletionConfirmationInput,
   ): Promise<JobStatus> {
     await delay(400);
+    const job = jobStore.get(jobId);
+    if (!job) throw new Error(`No job status for job ${jobId}`);
     if (!confirmation.completed) {
-      return jobStatus;
+      return job;
     }
-    return {
-      ...jobStatus,
-      awaitingCompletionConfirmation: false,
+    const updated: JobStatus = {
+      ...job,
+      phase: 'completed',
       completionConfirmedAt: new Date().toISOString(),
-      timeline: jobStatus.timeline.map((event) =>
-        event.id === 't3'
+      timeline: job.timeline.map((event) =>
+        event.status === 'pending'
           ? { ...event, status: 'done', meta: 'Confirmed by you just now' }
           : event,
       ),
     };
+    jobStore.set(jobId, updated);
+
+    const request = requestStore.find((r) => r.jobId === jobId || r.id === job.requestId);
+    if (request) {
+      request.status = 'completed';
+      request.statusMeta = 'Completed just now';
+    }
+
+    return updated;
+  }
+
+  async listRequests(): Promise<ServiceRequestSummary[]> {
+    await delay(300);
+    return requestStore;
+  }
+
+  async listMessageThreads(): Promise<MessageThread[]> {
+    await delay(250);
+    return messageThreads;
+  }
+
+  async getMessageThread(threadId: string): Promise<MessageThreadDetail> {
+    await delay(250);
+    const thread = messageThreads.find((t) => t.id === threadId);
+    if (!thread) throw new Error(`No message thread ${threadId}`);
+    thread.unread = false;
+    return { thread, messages: threadMessageStore.get(threadId) ?? [] };
+  }
+
+  async sendMessage(threadId: string, text: string): Promise<ThreadMessage[]> {
+    const existing = threadMessageStore.get(threadId) ?? [];
+    const homeownerMessage: ThreadMessage = {
+      id: nextId('msg'),
+      sender: 'homeowner',
+      text,
+      sentAt: new Date().toISOString(),
+    };
+    await delay(400);
+    const autoReply: ThreadMessage = {
+      id: nextId('msg'),
+      sender: 'contractor',
+      text: "Thanks for the message — we'll get back to you shortly.",
+      sentAt: new Date().toISOString(),
+    };
+    const updated = [...existing, homeownerMessage, autoReply];
+    threadMessageStore.set(threadId, updated);
+
+    const thread = messageThreads.find((t) => t.id === threadId);
+    if (thread) {
+      thread.lastMessagePreview = autoReply.text;
+      thread.lastMessageAt = autoReply.sentAt;
+    }
+
+    return updated;
+  }
+
+  async getAccountProfile(): Promise<AccountProfile> {
+    await delay(200);
+    return accountProfile;
   }
 }

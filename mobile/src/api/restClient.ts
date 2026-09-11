@@ -1,9 +1,14 @@
 import type {
+  AccountProfile,
   CompletionConfirmationInput,
   DashboardData,
   DecisionMemo,
   IntakeSession,
   JobStatus,
+  MessageThread,
+  MessageThreadDetail,
+  ServiceRequestSummary,
+  ThreadMessage,
 } from '../types/domain';
 import type { HomeConciergeApi } from './client';
 
@@ -56,5 +61,25 @@ export class RestHomeConciergeApi implements HomeConciergeApi {
 
   confirmJobCompletion(_jobId: string, _confirmation: CompletionConfirmationInput): Promise<JobStatus> {
     this.notImplemented('confirmJobCompletion');
+  }
+
+  listRequests(): Promise<ServiceRequestSummary[]> {
+    this.notImplemented('listRequests');
+  }
+
+  listMessageThreads(): Promise<MessageThread[]> {
+    this.notImplemented('listMessageThreads');
+  }
+
+  getMessageThread(): Promise<MessageThreadDetail> {
+    this.notImplemented('getMessageThread');
+  }
+
+  sendMessage(): Promise<ThreadMessage[]> {
+    this.notImplemented('sendMessage');
+  }
+
+  getAccountProfile(): Promise<AccountProfile> {
+    this.notImplemented('getAccountProfile');
   }
 }

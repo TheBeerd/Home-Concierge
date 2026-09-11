@@ -3,6 +3,7 @@ export type RootStackParamList = {
   Intake: undefined;
   DecisionMemo: { requestId: string };
   JobStatus: { jobId: string };
+  MessageThread: { threadId: string };
 };
 
 export type TabParamList = {

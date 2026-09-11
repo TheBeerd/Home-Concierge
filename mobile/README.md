@@ -9,7 +9,13 @@ An Expo (React Native) app for the DFW HVAC concierge pilot, targeting iOS first
 3. **Decision memo** — the comparison view: bids side by side, contradictions/outliers flagged, a synthesized (never prescriptive) "our take."
 4. **Job status** — appointment timeline plus the homeowner completion confirmation, which is the primary anti-fraud / trust-graph signal.
 
-`Requests`, `Messages`, and `Account` exist only as placeholder tabs so the tab bar matches the design — they're intentionally out of scope for this pass.
+Both the decision memo and job status screens end in a "Back to Home" action (they intentionally hide the native header/back button to keep focus, so this is the only way out).
+
+## The other three tabs
+
+- **Requests** — every request the homeowner has filed, split into "In progress" and "Completed," tapping through to the same decision-memo/job-status screens as Home.
+- **Messages** — a thread list per contractor conversation, with a basic chat view (`MessageThread`, pushed on the root stack so it gets a real back button).
+- **Account** — profile summary, a notifications toggle, and a Legal & Disclosures row that expands the mandatory liability disclosure copy from the product model (not yet gating onboarding — see Known gaps).
 
 ## Running it on Ubuntu, on a physical iPhone (Expo Go)
 
@@ -68,4 +74,5 @@ Uses `Fraunces` (serif, headings/"our take" accents) and `Inter` (sans, body/UI)
 ## Known gaps (by design, for this pass)
 
 - No camera/mic capture yet — the intake screen's "attach" chips simulate an attachment landing rather than opening the camera/mic, to keep this pass focused on the flow and interaction design. Swapping in `expo-image-picker` / `expo-av` is a contained follow-up.
-- No liability disclosure gate, auth, or persistence — see `../docs/product-model.md` for what's intentionally deferred.
+- The Legal & Disclosures copy exists in Account but isn't yet a mandatory first-use gate, and there's no auth or persistence — see `../docs/product-model.md` for what's intentionally deferred.
+- Messages are mocked with a single canned auto-reply per send, not a real conversation backend.

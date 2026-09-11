@@ -25,6 +25,8 @@ export interface ServiceRequestSummary {
   status: RequestStatus;
   statusMeta: string; // e.g. "3 bids in · memo ready" / "Scheduled for Thu, Sep 17"
   updatedAt: string; // ISO timestamp
+  /** Set once a bid has been accepted and a job exists to track. */
+  jobId?: string;
 }
 
 export interface SystemAgeBand {
@@ -119,6 +121,11 @@ export interface JobTimelineEvent {
   status: JobTimelineStatus;
 }
 
+export type JobPhase =
+  | 'scheduled' // appointment booked, window hasn't happened yet
+  | 'awaiting_confirmation' // window has passed, needs the homeowner's yes/no
+  | 'completed'; // homeowner confirmed the job was done
+
 export interface JobStatus {
   jobId: string;
   requestId: string;
@@ -126,7 +133,7 @@ export interface JobStatus {
   contractorName: string;
   appointmentWindow: string;
   timeline: JobTimelineEvent[];
-  awaitingCompletionConfirmation: boolean;
+  phase: JobPhase;
   completionConfirmedAt?: string;
 }
 
@@ -139,4 +146,39 @@ export interface CompletionConfirmationInput {
 export interface DashboardData {
   greetingName?: string;
   activeRequests: ServiceRequestSummary[];
+}
+
+// ---- Messages ----
+
+export interface MessageThread {
+  id: string;
+  contractorId: string;
+  contractorName: string;
+  requestId?: string;
+  lastMessagePreview: string;
+  lastMessageAt: string; // ISO timestamp
+  unread: boolean;
+}
+
+export type MessageSender = 'homeowner' | 'contractor';
+
+export interface ThreadMessage {
+  id: string;
+  sender: MessageSender;
+  text: string;
+  sentAt: string; // ISO timestamp
+}
+
+export interface MessageThreadDetail {
+  thread: MessageThread;
+  messages: ThreadMessage[];
+}
+
+// ---- Account ----
+
+export interface AccountProfile {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
 }

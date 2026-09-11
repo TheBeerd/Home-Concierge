@@ -87,7 +87,11 @@ export function IntakeScreen({ navigation }: Props) {
           <ProgressBar progress={session?.progress ?? 0} />
 
           {(session?.messages ?? []).map((message) => (
-            <ChatBubble key={message.id} sender={message.sender} text={message.text} />
+            <ChatBubble
+              key={message.id}
+              align={message.sender === 'user' ? 'right' : 'left'}
+              text={message.text}
+            />
           ))}
 
           {sending ? <Text style={styles.typing}>Thinking…</Text> : null}

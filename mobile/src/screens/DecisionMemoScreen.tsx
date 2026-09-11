@@ -1,3 +1,4 @@
+import { CommonActions } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -33,6 +34,10 @@ export function DecisionMemoScreen({ route, navigation }: Props) {
   }
 
   const suggestedBid = memo.bids.find((bid) => bid.id === memo.suggestedBidId);
+
+  function goHome() {
+    navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'Tabs' }] }));
+  }
 
   async function handleBook() {
     if (!suggestedBid) return;
@@ -87,6 +92,8 @@ export function DecisionMemoScreen({ route, navigation }: Props) {
             Ask a follow-up
           </Text>
         </View>
+
+        <Button label="Back to Home" variant="ghost" onPress={goHome} style={styles.homeButton} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -144,5 +151,8 @@ const styles = StyleSheet.create({
     fontFamily: fonts.sansSemiBold,
     fontSize: 12.5,
     color: colors.teal,
+  },
+  homeButton: {
+    marginTop: 20,
   },
 });

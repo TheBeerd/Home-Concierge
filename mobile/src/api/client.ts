@@ -1,9 +1,14 @@
 import type {
+  AccountProfile,
   CompletionConfirmationInput,
   DashboardData,
   DecisionMemo,
   IntakeSession,
   JobStatus,
+  MessageThread,
+  MessageThreadDetail,
+  ServiceRequestSummary,
+  ThreadMessage,
 } from '../types/domain';
 
 /**
@@ -47,4 +52,16 @@ export interface HomeConciergeApi {
     jobId: string,
     confirmation: CompletionConfirmationInput,
   ): Promise<JobStatus>;
+
+  /** Every request the homeowner has ever filed, in progress and completed. */
+  listRequests(): Promise<ServiceRequestSummary[]>;
+
+  listMessageThreads(): Promise<MessageThread[]>;
+
+  getMessageThread(threadId: string): Promise<MessageThreadDetail>;
+
+  /** Returns the full, updated message list for the thread. */
+  sendMessage(threadId: string, text: string): Promise<ThreadMessage[]>;
+
+  getAccountProfile(): Promise<AccountProfile>;
 }

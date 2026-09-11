@@ -1,3 +1,4 @@
+import { CommonActions } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -11,7 +12,7 @@ import type { RootStackParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'JobStatus'>;
 
-export function JobStatusScreen({ route }: Props) {
+export function JobStatusScreen({ route, navigation }: Props) {
   const { jobId } = route.params;
   const [job, setJob] = useState<JobStatus | null>(null);
   const [confirming, setConfirming] = useState<'yes' | 'no' | null>(null);
@@ -19,6 +20,10 @@ export function JobStatusScreen({ route }: Props) {
   useEffect(() => {
     api.getJobStatus(jobId).then(setJob);
   }, [jobId]);
+
+  function goHome() {
+    navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'Tabs' }] }));
+  }
 
   if (!job) {
     return (
@@ -58,7 +63,7 @@ export function JobStatusScreen({ route }: Props) {
           <Timeline events={job.timeline} />
         </View>
 
-        {job.awaitingCompletionConfirmation ? (
+        {job.phase === 'awaiting_confirmation' ? (
           <View style={styles.confirmCard}>
             <Text style={styles.confirmTitle}>Was the work completed?</Text>
             <Text style={styles.confirmBody}>
@@ -83,14 +88,22 @@ export function JobStatusScreen({ route }: Props) {
               />
             </View>
           </View>
-        ) : (
+        ) : job.phase === 'completed' ? (
           <View style={styles.doneCard}>
             <Text style={styles.doneTitle}>Thanks — job confirmed complete.</Text>
             <Text style={styles.doneBody}>
               This feeds straight into {job.contractorName}'s track record on the platform.
             </Text>
           </View>
+        ) : (
+          <View style={styles.scheduledCard}>
+            <Text style={styles.scheduledBody}>
+              We'll check in once the appointment window has passed to confirm the job was done.
+            </Text>
+          </View>
         )}
+
+        <Button label="Back to Home" variant="ghost" onPress={goHome} style={styles.homeButton} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -172,5 +185,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.mossText,
     lineHeight: 18,
+  },
+  scheduledCard: {
+    backgroundColor: colors.tealSoft,
+    borderRadius: radii.lg,
+    padding: 16,
+  },
+  scheduledBody: {
+    fontFamily: fonts.sans,
+    fontSize: 12,
+    color: colors.ink,
+    lineHeight: 18,
+  },
+  homeButton: {
+    marginTop: 20,
   },
 });

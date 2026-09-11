@@ -1,8 +1,10 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { AccountScreen } from '../screens/AccountScreen';
 import { HomeScreen } from '../screens/HomeScreen';
-import { PlaceholderScreen } from '../screens/PlaceholderScreen';
+import { MessagesScreen } from '../screens/MessagesScreen';
+import { RequestsScreen } from '../screens/RequestsScreen';
 import { colors } from '../theme/tokens';
 import type { TabParamList } from './types';
 
@@ -28,15 +30,21 @@ export function TabNavigator() {
         component={HomeScreen}
         options={{ tabBarIcon: ({ focused }) => <TabDot focused={focused} /> }}
       />
-      <Tab.Screen name="Requests" options={{ tabBarIcon: ({ focused }) => <TabDot focused={focused} /> }}>
-        {() => <PlaceholderScreen title="Requests" />}
-      </Tab.Screen>
-      <Tab.Screen name="Messages" options={{ tabBarIcon: ({ focused }) => <TabDot focused={focused} /> }}>
-        {() => <PlaceholderScreen title="Messages" />}
-      </Tab.Screen>
-      <Tab.Screen name="Account" options={{ tabBarIcon: ({ focused }) => <TabDot focused={focused} /> }}>
-        {() => <PlaceholderScreen title="Account" />}
-      </Tab.Screen>
+      <Tab.Screen
+        name="Requests"
+        component={RequestsScreen}
+        options={{ tabBarIcon: ({ focused }) => <TabDot focused={focused} /> }}
+      />
+      <Tab.Screen
+        name="Messages"
+        component={MessagesScreen}
+        options={{ tabBarIcon: ({ focused }) => <TabDot focused={focused} /> }}
+      />
+      <Tab.Screen
+        name="Account"
+        component={AccountScreen}
+        options={{ tabBarIcon: ({ focused }) => <TabDot focused={focused} /> }}
+      />
     </Tab.Navigator>
   );
 }
