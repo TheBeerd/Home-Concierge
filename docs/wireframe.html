@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HVAC Advocate — Core Screens</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --ink: #12203B;
+    --ink-soft: #4A5468;
+    --bg-app: #F6F7F5;
+    --surface: #FFFFFF;
+    --line: #E3E6E1;
+    --teal: #167C74;
+    --teal-soft: #E4F1EF;
+    --clay: #B54A24;
+    --clay-soft: #F7E9E1;
+    --moss: #4C7A3D;
+    --moss-soft: #EAF1E5;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 48px 32px;
+    background: #EDEEEA;
+    font-family: 'Inter', sans-serif;
+    color: var(--ink);
+  }
+
+  .intro {
+    max-width: 760px;
+    margin: 0 auto 44px;
+  }
+
+  .intro .eyebrow {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    color: var(--teal);
+    margin: 0 0 6px;
+  }
+
+  .intro h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 32px;
+    margin: 0 0 10px;
+    letter-spacing: -0.01em;
+  }
+
+  .intro p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin: 0;
+    max-width: 620px;
+  }
+
+  .rack {
+    display: flex;
+    gap: 28px;
+    overflow-x: auto;
+    padding-bottom: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .unit {
+    flex: 0 0 auto;
+  }
+
+  .unit-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin: 0 0 12px 6px;
+  }
+
+  .phone {
+    width: 340px;
+    height: 716px;
+    background: var(--bg-app);
+    border-radius: 42px;
+    border: 10px solid var(--ink);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 40px rgba(18,32,59,0.16);
+  }
+
+  .status-bar {
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 22px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    flex-shrink: 0;
+  }
+
+  .screen-header {
+    padding: 4px 20px 14px;
+    flex-shrink: 0;
+  }
+
+  .screen-header h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 21px;
+    margin: 0;
+  }
+
+  .screen-header .sub {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin: 3px 0 0;
+  }
+
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 20px 16px;
+  }
+
+  .tabbar {
+    height: 64px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding-bottom: 8px;
+  }
+
+  .tab {
+    font-size: 10.5px;
+    color: var(--ink-soft);
+    text-align: center;
+  }
+
+  .tab.active { color: var(--teal); font-weight: 600; }
+
+  .tab-dot {
+    width: 20px; height: 20px;
+    margin: 0 auto 3px;
+    border-radius: 6px;
+    background: var(--line);
+  }
+  .tab.active .tab-dot { background: var(--teal); }
+
+  /* ---- Screen 1: Home ---- */
+
+  .greeting {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 6px 0 2px;
+  }
+
+  .greeting-main {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 500;
+    margin: 0 0 20px;
+  }
+
+  .start-card {
+    background: var(--ink);
+    color: #fff;
+    border-radius: 20px;
+    padding: 22px;
+    margin-bottom: 18px;
+  }
+
+  .start-card .kicker {
+    font-size: 12px;
+    color: #9FD6D0;
+    margin: 0 0 6px;
+  }
+
+  .start-card h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 10px;
+    line-height: 1.3;
+  }
+
+  .start-card p {
+    font-size: 12.5px;
+    color: #C7CEDB;
+    margin: 0 0 16px;
+    line-height: 1.5;
+  }
+
+  .btn {
+    display: inline-block;
+    background: var(--teal);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 13px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+    text-align: center;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1.5px solid var(--line);
+    color: var(--ink);
+  }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin: 22px 0 10px;
+  }
+
+  .status-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 13px 14px;
+    margin-bottom: 10px;
+  }
+
+  .status-icon {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    background: var(--teal-soft);
+    flex-shrink: 0;
+  }
+
+  .status-row .title {
+    font-size: 13.5px;
+    font-weight: 600;
+    margin: 0 0 2px;
+  }
+
+  .status-row .meta {
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  /* ---- Screen 2: Intake ---- */
+
+  .bubble {
+    max-width: 84%;
+    padding: 11px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+
+  .bubble.ai {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-bottom-left-radius: 4px;
+  }
+
+  .bubble.user {
+    background: var(--ink);
+    color: #fff;
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+  }
+
+  .chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 4px 0 16px;
+  }
+
+  .chip {
+    border: 1.5px solid var(--teal);
+    color: var(--teal);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 13px;
+    border-radius: 20px;
+  }
+
+  .progress-track {
+    height: 5px;
+    background: var(--line);
+    border-radius: 3px;
+    margin: 4px 0 18px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    width: 60%;
+    height: 100%;
+    background: var(--teal);
+  }
+
+  .attach-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .attach-btn {
+    flex: 1;
+    border: 1.5px dashed var(--line);
+    border-radius: 12px;
+    padding: 12px 8px;
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+
+  /* ---- Screen 3: Decision memo ---- */
+
+  .flag-banner {
+    background: var(--clay-soft);
+    border-left: 3px solid var(--clay);
+    border-radius: 10px;
+    padding: 11px 13px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #7A331A;
+    margin-bottom: 16px;
+  }
+
+  .flag-banner b { color: var(--clay); }
+
+  .bid-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 15px;
+    margin-bottom: 12px;
+  }
+
+  .bid-card.pick {
+    border: 1.5px solid var(--teal);
+    background: var(--teal-soft);
+  }
+
+  .bid-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+
+  .bid-head .name {
+    font-size: 14.5px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .bid-head .badge {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--teal);
+    background: rgba(22,124,116,0.12);
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+
+  .bid-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    padding: 5px 0;
+    border-top: 1px solid rgba(18,32,59,0.06);
+  }
+
+  .bid-line .k { color: var(--ink-soft); }
+  .bid-line .v { font-weight: 600; text-align: right; max-width: 58%; }
+
+  .take-card {
+    background: var(--ink);
+    color: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 4px;
+  }
+
+  .take-card .kicker {
+    font-family: 'Fraunces', serif;
+    font-size: 13px;
+    color: #9FD6D0;
+    margin: 0 0 6px;
+  }
+
+  .take-card p {
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #DCE1EB;
+    margin: 0;
+  }
+
+  /* ---- Screen 4: Job status ---- */
+
+  .track-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+
+  .track-card .company {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 2px;
+  }
+
+  .track-card .role {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin: 0 0 14px;
+  }
+
+  .timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .timeline li {
+    position: relative;
+    padding-left: 22px;
+    padding-bottom: 16px;
+    font-size: 12.5px;
+  }
+
+  .timeline li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 2px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--teal);
+  }
+
+  .timeline li.pending::before {
+    background: var(--line);
+  }
+
+  .timeline li::after {
+    content: '';
+    position: absolute;
+    left: 4.5px; top: 12px;
+    width: 1px; height: calc(100% - 6px);
+    background: var(--line);
+  }
+
+  .timeline li:last-child::after { display: none; }
+
+  .timeline .t-title {
+    font-weight: 600;
+    margin: 0 0 2px;
+  }
+
+  .timeline .t-meta {
+    color: var(--ink-soft);
+    font-size: 11.5px;
+  }
+
+  .confirm-card {
+    background: var(--moss-soft);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: left;
+  }
+
+  .confirm-card h4 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 15px;
+    margin: 0 0 6px;
+  }
+
+  .confirm-card p {
+    font-size: 12px;
+    color: #3E5E33;
+    margin: 0 0 12px;
+    line-height: 1.5;
+  }
+
+  .confirm-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .confirm-actions .btn {
+    background: var(--moss);
+    padding: 10px;
+    font-size: 12.5px;
+  }
+
+  .confirm-actions .btn-ghost {
+    background: transparent;
+    border: 1.5px solid #B9CBAE;
+    color: #3E5E33;
+  }
+</style>
+</head>
+<body>
+
+  <div class="intro">
+    <p class="eyebrow">Core flow — wireframe pass</p>
+    <h1>The four screens that carry the whole product</h1>
+    <p>Home starts a request in one tap. Intake replaces a phone call with a guided conversation. The decision memo is the moment of trust — a comparison, not a chat log. Job status closes the loop and is where the verification data actually comes from.</p>
+  </div>
+
+  <div class="rack">
+
+    <!-- SCREEN 1: HOME -->
+    <div class="unit">
+      <p class="unit-label">1 · Home</p>
+      <div class="phone">
+        <div class="status-bar"><span>9:41</span><span>●●●●</span></div>
+        <div class="content">
+          <p class="greeting">Good afternoon</p>
+          <p class="greeting-main">Let's fix what's<br>going on.</p>
+
+          <div class="start-card">
+            <p class="kicker">Start a request</p>
+            <h3>What's happening with your AC or heat?</h3>
+            <p>Tell us in your own words — text, voice, or a photo. We'll take it from there.</p>
+            <div class="btn">Start now</div>
+          </div>
+
+          <p class="section-label">In progress</p>
+          <div class="status-row">
+            <div class="status-icon"></div>
+            <div>
+              <p class="title">Upstairs unit not cooling</p>
+              <p class="meta">3 bids in · memo ready</p>
+            </div>
+          </div>
+          <div class="status-row">
+            <div class="status-icon"></div>
+            <div>
+              <p class="title">Annual maintenance</p>
+              <p class="meta">Scheduled for Thu, Sep 17</p>
+            </div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div class="tab active"><div class="tab-dot"></div>Home</div>
+          <div class="tab"><div class="tab-dot"></div>Requests</div>
+          <div class="tab"><div class="tab-dot"></div>Messages</div>
+          <div class="tab"><div class="tab-dot"></div>Account</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: INTAKE -->
+    <div class="unit">
+      <p class="unit-label">2 · Guided intake</p>
+      <div class="phone">
+        <div class="status-bar"><span>9:42</span><span>●●●●</span></div>
+        <div class="screen-header">
+          <h2>Tell us more</h2>
+          <p class="sub">Building your brief</p>
+        </div>
+        <div class="content">
+          <div class="progress-track"><div class="progress-fill"></div></div>
+
+          <div class="bubble ai">Is the air blowing warm, or is nothing coming out at all?</div>
+          <div class="bubble user">Warm air, and it's been getting worse since yesterday.</div>
+          <div class="bubble ai">Got it. How old is your system, if you know?</div>
+
+          <div class="chip-row">
+            <div class="chip">Under 5 years</div>
+            <div class="chip">5–10 years</div>
+            <div class="chip">10+ years</div>
+            <div class="chip">Not sure</div>
+          </div>
+
+          <div class="bubble ai">A photo of the outdoor unit's data plate helps us a lot here.</div>
+          <div class="attach-row">
+            <div class="attach-btn">📷<br>Take photo</div>
+            <div class="attach-btn">🎙️<br>Voice note</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: DECISION MEMO -->
+    <div class="unit">
+      <p class="unit-label">3 · Decision memo</p>
+      <div class="phone">
+        <div class="status-bar"><span>4:08</span><span>●●●●</span></div>
+        <div class="screen-header">
+          <h2>Your decision memo</h2>
+          <p class="sub">3 contractors responded</p>
+        </div>
+        <div class="content">
+          <div class="flag-banner">
+            <b>Worth a second look:</b> Metro Air quoted full replacement without inspecting the compressor first.
+          </div>
+
+          <div class="bid-card pick">
+            <div class="bid-head">
+              <p class="name">Coolway Air</p>
+              <span class="badge">Suggested</span>
+            </div>
+            <div class="bid-line"><span class="k">Likely cause</span><span class="v">Failing compressor</span></div>
+            <div class="bid-line"><span class="k">Price range</span><span class="v">$600–1,400</span></div>
+            <div class="bid-line"><span class="k">Warranty</span><span class="v">2 yr, parts &amp; labor</span></div>
+            <div class="bid-line"><span class="k">Available</span><span class="v">Today</span></div>
+          </div>
+
+          <div class="bid-card">
+            <div class="bid-head"><p class="name">North Texas HVAC</p></div>
+            <div class="bid-line"><span class="k">Likely cause</span><span class="v">Refrigerant leak</span></div>
+            <div class="bid-line"><span class="k">Price range</span><span class="v">$450–900</span></div>
+            <div class="bid-line"><span class="k">Warranty</span><span class="v">1 yr, parts only</span></div>
+          </div>
+
+          <div class="take-card">
+            <p class="kicker">Our take</p>
+            <p>Start with Coolway Air. A repair-first diagnosis and a real labor warranty, at a fair price. If it turns out the compressor can't be saved, you'll have a clear diagnosis to make that call from.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: JOB STATUS -->
+    <div class="unit">
+      <p class="unit-label">4 · Job status</p>
+      <div class="phone">
+        <div class="status-bar"><span>2:15</span><span>●●●●</span></div>
+        <div class="screen-header">
+          <h2>Your appointment</h2>
+          <p class="sub">Upstairs unit not cooling</p>
+        </div>
+        <div class="content">
+          <div class="track-card">
+            <p class="company">Coolway Air</p>
+            <p class="role">Arriving Wed, 1:00–3:00 PM</p>
+            <ul class="timeline">
+              <li><p class="t-title">Bid accepted</p><p class="t-meta">Tue, 4:12 PM</p></li>
+              <li><p class="t-title">Appointment confirmed</p><p class="t-meta">Tue, 4:20 PM</p></li>
+              <li class="pending"><p class="t-title">Job completed</p><p class="t-meta">Awaiting confirmation</p></li>
+            </ul>
+          </div>
+
+          <div class="confirm-card">
+            <h4>Was the work completed?</h4>
+            <p>This helps us keep pricing and warranty promises honest for the next homeowner.</p>
+            <div class="confirm-actions">
+              <div class="btn">Yes, all done</div>
+              <div class="btn btn-ghost">Not yet</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
